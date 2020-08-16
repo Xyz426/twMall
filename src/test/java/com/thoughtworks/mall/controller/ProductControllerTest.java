@@ -1,5 +1,6 @@
 package com.thoughtworks.mall.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.mall.entity.Product;
 import com.thoughtworks.mall.repository.ProductRepository;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,5 +51,16 @@ public class ProductControllerTest {
 
         assertEquals("苏打水",all.get(0).getName());
 
+    }
+
+    @Test
+    public void shouldDeleteProductById() throws Exception {
+        Product product = Product.builder().url("xxx.com").unit("瓶").name("苏打水").price(1).build();
+        Product save = productRepository.save(product);
+
+        mockMvc.perform(delete("/delete/{id}",save.getId()))
+                .andExpect(status().isOk());
+
+        assertEquals(0,productRepository.findAll().size());
     }
 }
